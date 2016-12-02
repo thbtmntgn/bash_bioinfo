@@ -1,0 +1,11 @@
+#!/usr/local/bin/bash
+
+# Dependencies
+# - samtools
+
+# Fasta description : sequence ID + sequence length
+fadesc () {
+	samtools faidx ${1}
+	cat "${1}.fai" | cut -f1,2
+	rm "${1}.fai"
+}
