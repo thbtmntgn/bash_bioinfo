@@ -21,3 +21,25 @@ faget (){
 		xargs samtools faidx ${1} < ${2}
 	fi
 }
+
+gff (){
+	cat <<EOF
+
+Column 1: "seqid"
+Column 2: "source"
+Column 3: "type"
+Column 4: "start"
+Column 5: "end"
+Column 6: "score"
+Column 7: "strand"
+Column 8: "phase"
+Column 9: "attributes"
+
+More info at https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md
+
+EOF
+}
+
+new_bash_script (){
+	wget -O ${1} https://raw.githubusercontent.com/thbtmntgn/script_templates/master/bash_script_template.sh
+}
