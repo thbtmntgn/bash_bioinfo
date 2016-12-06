@@ -3,9 +3,21 @@
 # Dependencies
 # - samtools
 
-# Fasta description : sequence ID + sequence length
+# FASTA description : sequence ID + sequence length
 fadesc () {
 	samtools faidx ${1}
 	cat "${1}.fai" | cut -f1,2
 	rm "${1}.fai"
+}
+
+# Extract sequences from FASTA
+faget (){
+	FASTA=${1}
+	SEQIDS=${2}
+	if [[ ${FASTA} == "" || $SEQIDS == "" ]] ; then
+		echo "Usage : faget FASTA_FILE SEQID_LIST"
+	else
+		if [[ ! -e "${1}.fai" ]] ; then samtools faidx ${1} ; fi
+		xargs samtools faidx ${1} < ${2}
+	fi
 }
