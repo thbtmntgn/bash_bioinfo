@@ -41,5 +41,10 @@ EOF
 }
 
 new_bash_script (){
-	wget -O ${1} https://raw.githubusercontent.com/thbtmntgn/script_templates/master/bash_script_template.sh
+	SCRIPT_NAME=${1}
+	if [[ ${SCRIPT_NAME} == "" ]] ; then
+		echo "Usage : new_bash_script SCRIPT_NAME"
+	else
+		wget -O ${SCRIPT_NAME} https://raw.githubusercontent.com/thbtmntgn/script_templates/master/bash_script_template.sh
+	fi
 }
