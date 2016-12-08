@@ -40,11 +40,30 @@ More info at https://github.com/The-Sequence-Ontology/Specifications/blob/master
 EOF
 }
 
-new_bash_script (){
-	SCRIPT_NAME=${1}
-	if [[ ${SCRIPT_NAME} == "" ]] ; then
-		echo "Usage : new_bash_script SCRIPT_NAME"
-	else
+new_script (){
+
+	usage (){
+cat <<EOF
+	Usage : new_script LANGUAGE SCRIPT_NAME
+		- LANGUAGE can be bash or perl
+
+	Example : new_script bash script.sh
+EOF
+	}
+
+	LANGUAGE=${1}
+	SCRIPT_NAME=${2}
+	if [[ ${LANGUAGE} == "" || ${SCRIPT_NAME} == "" ]] ; then
+		usage
+		exit 1
+	fi
+
+	if [[ ${LANGUAGE} == "bash" ]] ; then
 		wget -O ${SCRIPT_NAME} https://raw.githubusercontent.com/thbtmntgn/script_templates/master/bash_script_template.sh
+	elif [[ ${LANGUAGE} == "perl" ]] ; then
+		wget -O ${SCRIPT_NAME} https://raw.githubusercontent.com/thbtmntgn/script_templates/master/perl_script_template.pl
+	else
+		usage
+		exit 1
 	fi
 }
