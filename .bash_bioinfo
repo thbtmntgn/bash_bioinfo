@@ -3,6 +3,12 @@
 # Dependencies
 # - samtools
 
+dim() {
+	ROW=$( more ${1} | wc -l )
+	COLUMN=$( awk '{print NF}' ${1} | sort -nu | tail -n 1 )
+	echo -e "${ROW}\t${COLUMN}"
+}
+
 # FASTA description : sequence ID + sequence length
 fadesc () {
 	samtools faidx ${1}
