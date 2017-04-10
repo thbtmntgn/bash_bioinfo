@@ -1,7 +1,15 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 
 # Dependencies
 # - samtools
+
+fqsize() {
+	if [[ ${1} =~ ".fastq.gz" ]] ; then
+		zcat ${1} | echo $(( $( wc -l ) / 4 ))
+	elif [[ ${1} =~ ".fastq" ]] ; then
+		cat ${1} | echo $(( $( wc -l ) / 4 ))
+	fi
+}
 
 dim() {
 	ROW=$( more ${1} | wc -l )
