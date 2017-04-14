@@ -3,6 +3,44 @@
 # Dependencies
 # - samtools
 
+subsample_fastq() {
+
+	# PARAM
+	READS1_PATH=${1}
+	READS2_PATH=${2}
+	NUMBER=${3}
+	OUTDIR=${4}
+
+	# VERIFICATIONS
+	if [[ -z ${READS1_PATH} || -z ${READS2_PATH} || -z ${NUMBER} || -z ${OUTDIR} ]] ; then
+
+		echo -e "sample_fastq READS1 READS2 READS_NUMBER OUTPUT_DIRECTORY"
+		echo -e "READS1 ---> ${READS1_PATH}"
+		echo -e "READS2 ---> ${READS2_PATH}"
+		echo -e "NUMBER ---> ${NUMBER}"
+		echo -e "OUTDIR ---> ${OUTDIR}"
+
+	else
+
+		# NAMES
+		READS1_FULLNAME=$( basename ${READS1_PATH} )
+		READS1_NAME=${READS1_FULLNAME%%.*}
+		READS2_FULLNAME=$( basename ${READS2_PATH} )
+		READS2_NAME=${READS2_FULLNAME%%.*}
+
+		# SUBSAMPLING
+		paste ${READS1_PATH} ${READS2_PATH} | awk '{ printf( "%s", $0 ) ; n++ ; if( n%4==0 ) { printf( "\n" ) ; } else { printf( "\t\t" ) ; } }' | shuf | head -n ${NUMBER} | sed 's/\t\t/\n/g' | awk -F '\t' -v file1="${OUTDIR}/${NUMBER}.${READS1_NAME}.fastq" -v file2="${OUTDIR}/${NUMBER}.${READS2_NAME}.fastq" '{ print $1 > file1 ; print $2 > file2 }'
+
+		#merge the two fastqs
+		#merge by group of 4 lines
+		#shuffle
+		#only 10 records
+		#restore the delimiters
+		#split in two files.
+
+	fi
+}
+
 fqsize() {
 	if [[ ${1} =~ ".fastq.gz" ]] ; then
 		zcat ${1} | echo $(( $( wc -l ) / 4 ))
