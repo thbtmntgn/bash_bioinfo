@@ -3,6 +3,32 @@
 # Dependencies
 # - samtools
 
+#   extract:  Extract most known archives with one command
+extract () {
+	if [ -f ${1} ] ; then
+		DIRNAME=$( dirname ${1} )
+		BASENAME=$( basename ${1} )
+		NAME=${BASENAME%%.*}
+		case ${1} in
+			*.tar.xz)  tar -xJf   ${1}                                 ;;
+			*.tar.bz2) tar xjf    ${1}                                 ;;
+			*.tar.gz)  tar xzf    ${1} -C ${DIRNAME} ; rm -f ${1}      ;;
+			*.bz2)     bunzip2    ${1}                                 ;;
+			*.rar)     unrar e    ${1}                                 ;;
+			*.gz)      gunzip     ${1}                                 ;;
+			*.tar)     tar xf     ${1}                                 ;;
+			*.tbz2)    tar xjf    ${1}                                 ;;
+			*.tgz)     tar xzf    ${1}                                 ;;
+			*.zip)     unzip      ${1}                                 ;;
+			*.Z)       uncompress ${1}                                 ;;
+			*.7z)      7z x       ${1}                                 ;;
+			*)         echo "'${1}' cannot be extracted via extract()" ;;
+		esac
+	else
+		echo "'${1}' is not a valid file"
+	fi
+}
+
 subsample_fastq() {
 
 	# PARAM
@@ -22,14 +48,8 @@ subsample_fastq() {
 
 	else
 
-		# NAMES
-		READS1_FULLNAME=$( basename ${READS1_PATH} )
-		READS1_NAME=${READS1_FULLNAME%%.*}
-		READS2_FULLNAME=$( basename ${READS2_PATH} )
-		READS2_NAME=${READS2_FULLNAME%%.*}
-
 		# SUBSAMPLING
-		paste ${READS1_PATH} ${READS2_PATH} | awk '{ printf( "%s", $0 ) ; n++ ; if( n%4==0 ) { printf( "\n" ) ; } else { printf( "\t\t" ) ; } }' | shuf | head -n ${NUMBER} | sed 's/\t\t/\n/g' | awk -F '\t' -v file1="${OUTDIR}/${NUMBER}.${READS1_NAME}.fastq" -v file2="${OUTDIR}/${NUMBER}.${READS2_NAME}.fastq" '{ print $1 > file1 ; print $2 > file2 }'
+		paste ${READS1_PATH} ${READS2_PATH} | awk '{ printf( "%s", $0 ) ; n++ ; if( n%4==0 ) { printf( "\n" ) ; } else { printf( "\t\t" ) ; } }' | shuf | head -n ${NUMBER} | sed 's/\t\t/\n/g' | awk -F '\t' -v file1="${OUTDIR}/${NUMBER}_R1.fastq" -v file2="${OUTDIR}/${NUMBER}_R2.fastq" '{ print $1 > file1 ; print $2 > file2 }'
 
 		#merge the two fastqs
 		#merge by group of 4 lines
@@ -65,8 +85,8 @@ fadesc () {
 # Extract sequences from FASTA
 faget (){
 	FASTA=${1}
-	SEQIDS=${2}
-	if [[ ${FASTA} == "" || $SEQIDS == "" ]] ; then
+	ACCESSIONIDS=${2}
+	if [[ ${FASTA} == "" || ${ACCESSIONIDS} == "" ]] ; then
 		echo "Usage : faget FASTA_FILE SEQID_LIST"
 	else
 		if [[ ! -e "${1}.fai" ]] ; then samtools faidx ${1} ; fi
