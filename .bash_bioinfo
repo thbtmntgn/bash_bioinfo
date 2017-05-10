@@ -69,7 +69,8 @@ fqsize() {
 	fi
 }
 
-dim() {
+# Get file dimension (row and column number)
+filedim() {
 	ROW=$( more ${1} | wc -l )
 	COLUMN=$( awk '{print NF}' ${1} | sort -nu | tail -n 1 )
 	echo -e "${ROW}\t${COLUMN}"
